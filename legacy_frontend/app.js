@@ -37,7 +37,7 @@ const dom = {
 let selectedFile = null;
 let lastResult = null;
 let sessionHistory = [];
-const API_BASE = 'http://localhost:5001';
+const API_BASE = 'https://deepfake-detector-ig87.onrender.com';
 
 function redirectToLogin(reason) {
     const params = new URLSearchParams({
@@ -161,7 +161,7 @@ async function runForensicPipeline() {
     formData.append('image', selectedFile);
 
     try {
-        const response = await fetch('http://localhost:5001/predict', {
+        const response = await fetch(`${API_BASE}/predict`, {
             method: 'POST',
             body: formData,
             credentials: 'include'

@@ -99,7 +99,7 @@
             const emptyState = document.getElementById('empty-state');
 
             try {
-                const response = await fetch('http://localhost:5001/investigations', {
+                const response = await fetch('https://deepfake-detector-ig87.onrender.com/investigations', {
                     credentials: 'include'
                 });
 
@@ -126,7 +126,7 @@
 
                     card.innerHTML = `
                         <div class="thumb-wrapper">
-                            <img src="http://localhost:5001/uploads/${item.stored_filename}" alt="Thumbnail">
+                            <img src="https://deepfake-detector-ig87.onrender.com/uploads/${item.stored_filename}" alt="Thumbnail">
                         </div>
                         <div class="meta-text" style="color: var(--accent-blue)">[${new Date(item.created_at).toLocaleString()}]</div>
                         <div style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: ${isFake ? 'var(--accent-crimson)' : 'var(--accent-green)'}">
@@ -168,7 +168,7 @@
             }
 
             try {
-                const imageData = await imageUrlToDataUrl(`http://localhost:5001/uploads/${encodeURIComponent(record.stored_filename)}`);
+                    const imageData = await imageUrlToDataUrl(`https://deepfake-detector-ig87.onrender.com/uploads/${encodeURIComponent(record.stored_filename)}`);
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 const isFake = record.analysis_result === 'MANIPULATED';
@@ -244,7 +244,7 @@
                 return;
             }
 
-            const response = await fetch('http://localhost:5001/investigations', {
+                const response = await fetch('https://deepfake-detector-ig87.onrender.com/investigations', {
                 method: 'DELETE',
                 credentials: 'include'
             });

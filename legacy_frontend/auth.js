@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5001';
+const API_BASE = 'https://deepfake-detector-ig87.onrender.com';
 
 function initializeFirebaseAuth() {
     const button = document.getElementById('google-signin-btn');
