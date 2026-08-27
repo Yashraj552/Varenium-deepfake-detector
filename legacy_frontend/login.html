@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varenium Forensic | Sign In</title>
+    <link rel="stylesheet" href="style.css?v=3.0.0">
+    <style>
+        .auth-page { min-height: 100vh; display: grid; place-items: center; padding: 2rem; }
+        .auth-card { width: min(100%, 440px); }
+        .auth-card h2 { font-family: var(--font-heading); margin-bottom: 1.5rem; }
+        .auth-card label { display: block; color: var(--text-dim); font: 0.75rem var(--font-mono); margin: 1rem 0 0.4rem; }
+        .auth-card input { width: 100%; padding: 0.85rem; background: #ffffff; border: var(--glass-border); color: var(--text-main); font: 0.9rem var(--font-sans); }
+        .auth-card button { margin-top: 1.5rem; }
+        .google-auth-btn { display: block; margin-top: 0.75rem; padding: 0.9rem; border: 1px solid var(--border-glow); color: var(--text-main); text-align: center; text-decoration: none; font: 0.75rem var(--font-mono); }
+        .google-auth-btn:hover { border-color: #00aeb9; background: rgba(0, 240, 255, 0.08); }
+        #auth-message { min-height: 1.4rem; color: var(--accent-crimson); font: 0.75rem var(--font-mono); margin-top: 1rem; }
+        .auth-link { color: var(--accent-blue); font: 0.75rem var(--font-mono); }
+    </style>
+</head>
+<body>
+    <main class="auth-page">
+        <section class="glass-card auth-card">
+            <p class="section-title">SECURE ACCESS</p>
+            <h2>VARENIUM <span class="accent">FORENSIC</span></h2>
+            <form onsubmit="submitAuthForm(event, '/auth/login')">
+                <label for="email">EMAIL</label>
+                <input id="email" name="email" type="email" autocomplete="email" required>
+                <label for="password">PASSWORD</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required>
+                <button class="action-btn" type="submit">SIGN IN</button>
+            </form>
+            <button id="google-signin-btn" class="google-auth-btn" type="button">CONTINUE WITH GOOGLE</button>
+            <p id="auth-message" role="alert" aria-live="polite"></p>
+            <a class="auth-link" href="register.html">CREATE INVESTIGATOR ACCOUNT</a>
+        </section>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js?v=1.0.0"></script>
+    <script src="auth.js?v=3.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>VARENIUM FORENSIC | Deepfake Detection System</title>
+    <meta name="description" content="Varenium Forensic is an advanced deepfake detection system utilizing dual-stream spatial and frequency domain analysis to identify synthetic generative media.">
+    <link rel="stylesheet" href="style.css?v=3.0.0">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- jsPDF for Reporting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        window.addEventListener('pageshow', async () => {
+            try {
+                const response = await fetch('http://localhost:5001/auth/me', {
+                    credentials: 'include',
+                    cache: 'no-store'
+                });
+                if (!response.ok) window.location.replace('landing.html');
+            } catch {
+                window.location.replace('landing.html');
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo-group">
+                <h1>VARENIUM <span class="accent">FORENSIC</span></h1>
+            </div>
+            <div class="system-stats">
+                <div class="stat-item"><span class="v-dot"></span> SYSTEM: ACTIVE</div>
+                <div class="stat-item">BACKEND: <span id="ping-text">--ms</span></div>
+                <div class="stat-item">ENV: PRODUCTION</div>
+                <a href="landing.html" class="toggle-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">LANDING PAGE</a>
+                <button id="logout-btn" class="toggle-btn">LOG OUT</button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Results Banner (Hidden) -->
+            <div id="result-banner" class="glass-card result-banner hidden">
+                <div class="banner-info">
+                    <p class="section-title">ANALYSIS VERDICT</p>
+                    <div id="result-text" class="result-text">AUTHENTIC</div>
+                </div>
+                <div class="banner-badge">
+                    <button id="report-btn" class="toggle-btn">DOWNLOAD REPORT</button>
+                </div>
+            </div>
+
+            <!-- Analysis Stage -->
+            <div class="analysis-stage">
+                <!-- Visual Viewport -->
+                <div class="glass-card shimmer">
+                    <p class="section-title"><i data-lucide="eye"></i> FORENSIC VIEWPORT</p>
+                    <div class="viewport-container" id="drop-zone">
+                        <div class="viewport-label">SOURCE_SAMPLE</div>
+                        <img id="image-main" src="" alt="" class="hidden">
+                        
+                        <!-- Analysis Overlays -->
+                        <img id="heatmap-overlay" src="" class="hidden" style="position: absolute; opacity: 0.7;">
+                        <img id="frequency-overlay" src="" class="hidden" style="position: absolute;">
+
+                        <!-- Empty State -->
+                        <div id="upload-prompt" class="upload-prompt">
+                            <i data-lucide="upload-cloud" style="width: 48px; height: 48px; color: var(--accent-blue);"></i>
+                            <p style="margin-top: 1rem; font-family: var(--font-mono); font-size: 0.8rem;">DRAG SAMPLE OR <span style="color: var(--accent-blue); cursor: pointer;">EXPLORE</span></p>
+                        </div>
+
+                        <input type="file" id="file-input" hidden accept=".jpg,.jpeg,.png">
+                    </div>
+
+                    <!-- Comparison Controls -->
+                    <div id="compare-controls" class="compare-toggle hidden">
+                        <button class="toggle-btn active" data-view="original">ORIGINAL</button>
+                        <button class="toggle-btn" data-view="spatial">SPATIAL</button>
+                        <button class="toggle-btn" data-view="frequency">FREQUENCY</button>
+                    </div>
+                </div>
+
+                <!-- Analysis Summary -->
+                <div class="glass-card">
+                    <p class="section-title"><i data-lucide="bar-chart-3"></i> INTEGRITY METRICS</p>
+                    
+                    <div class="gauge-grid">
+                        <div class="gauge-card">
+                            <div class="gauge-label">CONFIDENCE</div>
+                            <div id="conf-val" class="gauge-value" style="color: var(--accent-blue);">--%</div>
+                        </div>
+                        <div class="gauge-card">
+                            <div class="gauge-label">LOGIT_MAG</div>
+                            <div id="logit-val" class="gauge-value" style="color: var(--accent-amber);">0.00</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem;">
+                        <div class="metric-row">
+                            <div class="metric-header"><span>SPATIAL CONSISTENCY</span><span id="spatial-pct">--%</span></div>
+                            <div class="bar-bg"><div id="spatial-bar" class="bar-fill"></div></div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-header"><span>FREQUENCY ARTIFACTS</span><span id="freq-pct">--%</span></div>
+                            <div class="bar-bg"><div id="freq-bar" class="bar-fill" style="background: var(--accent-amber);"></div></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; border-top: 1px solid var(--border-glow); padding-top: 1rem;">
+                        <p class="section-title">AI REASONING CORE</p>
+                        <div id="ai-reasoning" class="terminal-line" style="font-size: 0.65rem; color: var(--accent-blue); line-height: 1.6; max-height: 180px; overflow-y: auto; padding-right: 5px;">
+                            > AWAITING INFERENCE...
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; border-top: 1px solid var(--border-glow); padding-top: 1rem;">
+                        <p class="section-title">METADATA</p>
+                        <div id="metadata-grid" class="system-stats" style="flex-direction: column; gap: 8px;">
+                            <div class="stat-item">RESOLUTION: <span id="meta-res" style="color: white;">--</span></div>
+                            <div class="stat-item">FORMAT: <span id="meta-fmt" style="color: white;">--</span></div>
+                            <div class="stat-item">SIZE: <span id="meta-size" style="color: white;">--</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar / Console -->
+        <aside class="sidebar">
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <p class="section-title"><i data-lucide="terminal"></i> FORENSIC AUDIT LOG</p>
+                <div id="terminal" class="terminal-window">
+                    <div class="terminal-line">> SYSTEM READY...</div>
+                    <div class="terminal-line">> AWAITING FORENSIC SAMPLE...</div>
+                </div>
+            </div>
+
+            <button id="analyze-btn" class="action-btn" disabled>INITIALIZE ANALYSIS</button>
+            <button id="reset-btn" class="action-btn hidden" style="background: var(--text-muted); color: #fff;">NEW INVESTIGATION</button>
+        </aside>
+
+        <!-- Session History -->
+        <footer>
+            <div class="history-label">SESSION_LOG:</div>
+            <div id="history-strip" class="history-strip">
+                <!-- History items appended here -->
+            </div>
+            <button onclick="window.location.href='history.html'" class="action-btn" style="width: 200px; padding: 0.8rem; background: var(--text-muted); color: #fff; font-size: 0.7rem;">VIEW ARCHIVE</button>
+            <div style="margin-left: auto; font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted);">
+                VERSION 2.0.0-PRO // FOR INTERNAL USE ONLY
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js?v=2.1.2"></script>
+    <script>
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await fetch('http://localhost:5001/auth/logout', { method: 'POST', credentials: 'include' });
+            window.location.href = 'landing.html';
+        });
+    </script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

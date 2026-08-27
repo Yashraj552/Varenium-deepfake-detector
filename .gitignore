@@ -1,0 +1,41 @@
+# Environment variables
+.env
+backend/.env
+
+# Firebase credentials
+firebase-service-account*.json
+service-account*.json
+backend/varenium-forensic-firebase-adminsdk*.json
+
+# Databases (contain user data — never commit these)
+backend/auth.db
+backend/forensic.db
+*.db
+*.sqlite
+
+# Logs
+*.log
+secure_app.log
+backend/secure_app.log
+
+# User uploaded images
+backend/uploads/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Large model weight files (host these separately e.g. Google Drive / HuggingFace)
+model/*.pth
+model/*.onnx
+model/*.onnx.data
+!model/best_deepfake_detector.onnx
+!model/best_deepfake_detector.onnx.data
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,16 @@
+flask
+flask-cors
+flask-sqlalchemy
+numpy
+opencv-python-headless
+pillow
+onnxruntime
+
+python-dotenv
+marshmallow
+bcrypt
+gunicorn
+Authlib
+firebase-admin
+
+psycopg2-binary

@@ -1,0 +1,37 @@
+# Model weights - too large, upload to Volume separately
+model/*.pth
+model/*.onnx
+model/*.onnx.data
+
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Databases
+backend/auth.db
+backend/forensic.db
+*.db
+
+# Logs
+*.log
+
+# Uploads
+backend/uploads/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Secrets
+.env
+backend/.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Analysis images in model folder
+model/*.jpg
+model/*.png

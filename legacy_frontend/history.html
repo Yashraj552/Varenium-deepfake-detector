@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>FORENSIC ARCHIVE | Varenium Forensic</title>
+    <meta name="description" content="View archived deepfake analysis reports and case history from the Varenium Forensic Deepfake Detection Engine.">
+    <link rel="stylesheet" href="style.css?v=3.0.0">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- jsPDF for Reporting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        @media (max-width: 1100px) { .history-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px) { .history-grid { grid-template-columns: 1fr; } }
+        .archive-card {
+            border-left: 4px solid var(--accent-blue);
+            display: flex;
+            flex-direction: column;
+        }
+        .archive-card.manipulated {
+            border-left-color: var(--accent-crimson);
+        }
+        .thumb-wrapper {
+            width: 100%;
+            height: 150px;
+            background: #000;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .thumb-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .meta-text {
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+        .download-archive-btn {
+            margin-top: auto;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 10px;
+            font-family: var(--font-heading);
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .download-archive-btn:hover {
+            background: var(--accent-blue);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" style="display: block; overflow-y: auto;">
+        <header>
+            <div class="logo-group">
+                <h1 style="cursor: pointer;" onclick="window.location.href='dashboard.html'"><i data-lucide="chevron-left"></i> FORENSIC <span class="accent">ARCHIVE</span></h1>
+            </div>
+            <button onclick="clearHistory()" class="action-btn" style="width: 180px; padding: 0.8rem; background: var(--accent-crimson); color: #fff; font-size: 0.7rem;">WIPE ALL LOGS</button>
+        </header>
+
+        <main class="history-grid" id="history-container">
+            <!-- Cards will be injected here -->
+        </main>
+
+        <div id="empty-state" class="hidden" style="text-align: center; margin-top: 10rem;">
+            <i data-lucide="folder-x" style="width: 64px; height: 64px; color: var(--text-muted);"></i>
+            <p style="color: var(--text-muted); margin-top: 1rem;">NO ENCRYPTED LOGS FOUND IN DATABASE</p>
+            <button onclick="window.location.href='dashboard.html'" class="action-btn" style="width: 200px; margin-top: 2rem;">START NEW CASE</button>
+        </div>
+    </div>
+
+    <script>
+        let cachedHistory = [];
+
+        async function loadHistory() {
+            const container = document.getElementById('history-container');
+            const emptyState = document.getElementById('empty-state');
+
+            try {
+                const response = await fetch('http://localhost:5001/investigations', {
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    throw new Error('Unable to load investigation history');
+                }
+
+                const data = await response.json();
+                cachedHistory = data.investigations || [];
+
+                if (cachedHistory.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                cachedHistory.forEach((item) => {
+                    const isFake = item.analysis_result === 'MANIPULATED';
+                    const card = document.createElement('div');
+                    card.className = `glass-card archive-card ${isFake ? 'manipulated' : ''}`;
+
+                    card.innerHTML = `
+                        <div class="thumb-wrapper">
+                            <img src="http://localhost:5001/uploads/${item.stored_filename}" alt="Thumbnail">
+                        </div>
+                        <div class="meta-text" style="color: var(--accent-blue)">[${new Date(item.created_at).toLocaleString()}]</div>
+                        <div style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: ${isFake ? 'var(--accent-crimson)' : 'var(--accent-green)'}">
+                            ${item.analysis_result} (${item.confidence_score}%)
+                        </div>
+                        <div class="meta-text">FILE: ${item.original_filename}</div>
+                        <div class="meta-text" style="margin-bottom: 1.5rem">HASH: ${item.file_hash.substring(0, 12)}...</div>
+                        <button class="download-archive-btn" onclick="downloadRecordReport(${item.id})">
+                            <i data-lucide="file-down" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 5px;"></i>
+                            DOWNLOAD REPORT
+                        </button>
+                    `;
+                    container.appendChild(card);
+                });
+                lucide.createIcons();
+            } catch (error) {
+                emptyState.classList.remove('hidden');
+                console.error(error);
+            }
+        }
+
+        async function imageUrlToDataUrl(url) {
+            const response = await fetch(url, { credentials: 'include' });
+            if (!response.ok) throw new Error('Unable to load archived sample.');
+            const blob = await response.blob();
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('Unable to prepare archived sample.'));
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        async function downloadRecordReport(id) {
+            const record = cachedHistory.find(item => item.id === id);
+            if (!record) {
+                alert('Archived investigation could not be found.');
+                return;
+            }
+
+            try {
+                const imageData = await imageUrlToDataUrl(`http://localhost:5001/uploads/${encodeURIComponent(record.stored_filename)}`);
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const isFake = record.analysis_result === 'MANIPULATED';
+                const caseId = `CASE-${String(record.id).padStart(6, '0')}`;
+                const verdictColor = isFake ? [255, 171, 0] : [0, 174, 185];
+
+                doc.setFillColor(23, 33, 43);
+                doc.rect(0, 0, 210, 36, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text('VARENIUM FORENSIC', 15, 22);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.text('ARCHIVED FORENSIC ANALYSIS REPORT', 15, 29);
+
+                doc.setTextColor(23, 33, 43);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                doc.text('INVESTIGATION SUMMARY', 15, 55);
+                doc.line(15, 58, 195, 58);
+
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text('CASE ID:', 15, 70);
+                doc.text(caseId, 65, 70);
+                doc.text('TIMESTAMP:', 15, 78);
+                doc.text(new Date(record.created_at).toLocaleString(), 65, 78);
+                doc.text('SOURCE FILE:', 15, 86);
+                doc.text(String(record.original_filename).slice(0, 55), 65, 86);
+                doc.text('SHA-256:', 15, 94);
+                doc.text(record.file_hash, 65, 94);
+
+                doc.setDrawColor(...verdictColor);
+                doc.setLineWidth(1);
+                doc.rect(15, 108, 180, 26);
+                doc.setTextColor(...verdictColor);
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`VERDICT: ${record.analysis_result}`, 22, 125);
+
+                doc.setTextColor(23, 33, 43);
+                doc.setFontSize(12);
+                doc.text('SAVED MODEL RESULT', 15, 153);
+                doc.line(15, 156, 75, 156);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text('Confidence:', 15, 168);
+                doc.text(`${record.confidence_score}%`, 65, 168);
+                doc.text('Record source:', 15, 176);
+                doc.text('Persisted investigation archive', 65, 176);
+
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('ARCHIVED SAMPLE', 15, 198);
+                doc.line(15, 201, 75, 201);
+                doc.addImage(imageData, 'JPEG', 15, 210, 80, 60);
+
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(100, 110, 118);
+                doc.text('This report was generated from the saved investigation record.', 15, 285);
+                doc.text('VARENIUM FORENSIC // ARCHIVE EXPORT', 15, 290);
+                doc.save(`forensic_archive_${caseId}.pdf`);
+            } catch (error) {
+                console.error(error);
+                alert('Unable to generate the archived report. Please try again.');
+            }
+        }
+
+        async function clearHistory() {
+            if (!confirm('WARNING: This will permanently delete all investigation records for the current user. Continue?')) {
+                return;
+            }
+
+            const response = await fetch('http://localhost:5001/investigations', {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                alert('Unable to clear investigation history.');
+                return;
+            }
+
+            location.reload();
+        }
+
+        window.onload = loadHistory;
+    </script>
+</body>
+</html>

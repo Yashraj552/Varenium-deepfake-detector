@@ -1,0 +1,35 @@
+# Ignore Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# Ignore local databases (these will be replaced by Supabase)
+*.db
+backend/auth.db
+backend/forensic.db
+
+# Ignore environment variables
+.env
+.env.local
+
+# Never bake service-account credentials into an image.
+backend/*firebase-adminsdk*.json
+backend/*service-account*.json
+
+# Ignore git artifacts
+.git
+.gitignore
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore user uploads/downloads
+backend/uploads/
+model/*.jpg
+model/*.png
+
+# Training checkpoints are not needed by the ONNX inference service.
+model/*.pth
