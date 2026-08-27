@@ -22,4 +22,4 @@ COPY model/ model/
 EXPOSE 8080
 
 # Run the Flask app using Gunicorn
-CMD gunicorn --bind 0.0.0.0:${PORT:-8080} --chdir backend --timeout 120 --workers 1 main:app
+CMD python -u -m gunicorn --bind 0.0.0.0:${PORT:-8080} --chdir backend --timeout 120 --workers 1 --access-logfile - --error-logfile - main:app

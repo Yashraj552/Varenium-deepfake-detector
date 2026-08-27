@@ -851,7 +851,7 @@ def predict():
 
     except Exception as e:
         # Keep client-facing message generic; real details go to server logs
-        print(f"Error during analysis/upload: {e}")
+        logger.exception("Error during analysis/upload")
         # If temp_path exists, attempt cleanup
         try:
             if 'temp_path' in locals() and os.path.exists(temp_path):
