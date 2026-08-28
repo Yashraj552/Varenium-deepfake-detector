@@ -329,6 +329,71 @@
     line-height: 1.7;
 }
 
+.vs-landing__how-to {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border-glow);
+}
+
+.vs-landing__section-heading {
+    max-width: 620px;
+}
+
+.vs-landing__section-heading .vs-landing__eyebrow {
+    margin-bottom: 0.75rem;
+}
+
+.vs-landing__section-heading h2 {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3vw, 3rem);
+    line-height: 1.05;
+}
+
+.vs-landing__section-heading > p:last-child {
+    margin: 1rem 0 0;
+    color: var(--text-dim);
+    line-height: 1.7;
+}
+
+.vs-landing__steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.vs-landing__step-card {
+    position: relative;
+    min-height: 245px;
+    padding: 1.35rem;
+    border: 1px solid var(--border-glow);
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.vs-landing__step-number {
+    display: block;
+    margin-bottom: 1.1rem;
+    color: var(--accent-green);
+    font: 0.7rem var(--font-mono);
+    letter-spacing: 0.12rem;
+}
+
+.vs-landing__step-card .vs-landing__icon {
+    margin-bottom: 1rem;
+}
+
+.vs-landing__step-card h3 {
+    margin: 0 0 0.65rem;
+    font-size: 1.05rem;
+}
+
+.vs-landing__step-card p {
+    margin: 0;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
 @media (max-width: 900px) {
     .vs-landing__hero {
         grid-template-columns: 1fr;
@@ -336,6 +401,10 @@
 
     .vs-landing__features {
         grid-template-columns: 1fr;
+    }
+
+    .vs-landing__steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -352,6 +421,10 @@
 
     .vs-landing__metrics {
         flex-direction: column;
+    }
+
+    .vs-landing__steps {
+        grid-template-columns: 1fr;
     }
 
     .vs-landing__actions {

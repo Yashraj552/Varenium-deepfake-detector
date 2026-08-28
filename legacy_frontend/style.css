@@ -310,6 +310,53 @@ header {
     min-height: 140px;
 }
 
+.dashboard-how-to {
+    grid-column: 1 / -1;
+    padding: 1.5rem 2rem 2rem;
+    border-top: 1px solid var(--border-glow);
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.dashboard-how-to__heading h2 {
+    margin: 0.4rem 0 0;
+    color: var(--text-main);
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+}
+
+.dashboard-how-to__steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.dashboard-how-to__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--border-glow);
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.dashboard-how-to__step span {
+    grid-row: span 2;
+    color: var(--accent-green);
+    font: 0.7rem var(--font-mono);
+}
+
+.dashboard-how-to__step strong {
+    color: var(--text-main);
+    font-family: var(--font-heading);
+}
+
+.dashboard-how-to__step small {
+    margin-top: 0.35rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
 .analysis-notice {
     margin: 0 0 1rem;
     padding: 0.8rem 1rem;
@@ -402,6 +449,14 @@ footer {
 
     .analysis-stage {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-how-to {
+        padding: 1rem;
+    }
+
+    .dashboard-how-to__steps {
+        grid-template-columns: 1fr 1fr;
     }
 
     .result-banner {
