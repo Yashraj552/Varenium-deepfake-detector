@@ -128,6 +128,20 @@
     color: var(--text-dim);
 }
 
+.vs-landing__notice,
+.analysis-notice {
+    border-left: 3px solid var(--accent-blue);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    line-height: 1.6;
+}
+
+.vs-landing__notice {
+    max-width: 44rem;
+    margin: 1.25rem 0 0;
+    padding-left: 0.9rem;
+}
+
 .vs-landing__actions {
     display: flex;
     align-items: center;

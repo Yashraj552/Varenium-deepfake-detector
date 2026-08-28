@@ -310,6 +310,12 @@ header {
     min-height: 140px;
 }
 
+.analysis-notice {
+    margin: 0 0 1rem;
+    padding: 0.8rem 1rem;
+    background: rgba(23, 33, 43, 0.04);
+}
+
 .result-banner .section-title {
     margin-bottom: 5px;
 }
