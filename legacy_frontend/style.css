@@ -53,7 +53,7 @@ body {
 header {
     grid-column: 1 / -1;
     background: rgba(255, 255, 255, 0.96);
-    padding: 1.5rem 2rem;
+    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -83,11 +83,11 @@ header {
 /* Main Workspace */
 .workspace {
     grid-column: 1 / 3;
-    padding: 2rem;
+    padding: 1.25rem 1.5rem 2rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.25rem;
 }
 
 /* Glass Card */
@@ -106,7 +106,7 @@ header {
 .analysis-stage {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: 1.25rem;
 }
 
 .viewport-container {
@@ -174,13 +174,18 @@ header {
 .sidebar {
     grid-column: 3;
     grid-row: 2;
+    align-self: start;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 74px);
+    min-height: 420px;
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(4px);
     border-left: 1px solid var(--border-glow);
-    padding: 2rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .section-title {
@@ -312,7 +317,7 @@ header {
 
 .dashboard-how-to {
     grid-column: 1 / -1;
-    padding: 1.5rem 2rem 2rem;
+    padding: 1rem 1.25rem 1.25rem;
     border-top: 1px solid var(--border-glow);
     background: rgba(255, 255, 255, 0.5);
 }
@@ -328,7 +333,7 @@ header {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
-    margin-top: 1.25rem;
+    margin-top: 0.9rem;
 }
 
 .dashboard-how-to__step {
