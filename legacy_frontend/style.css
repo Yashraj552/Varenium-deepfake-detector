@@ -368,6 +368,49 @@ header {
     background: rgba(23, 33, 43, 0.04);
 }
 
+.reasoning-panel {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.reasoning-panel p {
+    margin: 0 0 0.75rem;
+}
+
+.reasoning-panel .reasoning-headline {
+    color: var(--text-main);
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.reasoning-panel strong {
+    display: block;
+    margin: 1rem 0 0.35rem;
+    color: var(--text-main);
+    font-size: 0.72rem;
+    letter-spacing: 0.04rem;
+    text-transform: uppercase;
+}
+
+.reasoning-panel ul {
+    margin: 0 0 0.8rem;
+    padding-left: 1.15rem;
+}
+
+.reasoning-panel li {
+    margin-bottom: 0.3rem;
+}
+
+.reasoning-panel .reasoning-caution {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-glow);
+    color: var(--text-muted);
+}
+
 .result-banner .section-title {
     margin-bottom: 5px;
 }

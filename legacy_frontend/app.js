@@ -210,8 +210,31 @@ function renderAnalysisResults(data) {
     dom.meta.fmt.innerText = data.metadata.format;
     dom.meta.size.innerText = `${data.metadata.filesize_kb} KB`;
 
-    // XAI Reasoning
-    document.getElementById('ai-reasoning').innerHTML = `> ${data.reasoning || "Analyzing underlying forensic patterns..."}`;
+    // Render an evidence brief instead of exposing internal model jargon.
+    const reasoning = data.reasoning_detail || {};
+    const reasoningPanel = document.getElementById('ai-reasoning');
+    reasoningPanel.replaceChildren();
+    const reasoningHeadline = document.createElement('p');
+    reasoningHeadline.className = 'reasoning-headline';
+    reasoningHeadline.textContent = reasoning.headline || 'The scan is complete.';
+    reasoningPanel.appendChild(reasoningHeadline);
+    const reasoningSummary = document.createElement('p');
+    reasoningSummary.textContent = reasoning.summary || data.reasoning || '';
+    reasoningPanel.appendChild(reasoningSummary);
+    const signalsTitle = document.createElement('strong');
+    signalsTitle.textContent = 'What informed this result';
+    reasoningPanel.appendChild(signalsTitle);
+    const signals = document.createElement('ul');
+    (reasoning.signals || []).forEach((signal) => {
+        const item = document.createElement('li');
+        item.textContent = signal;
+        signals.appendChild(item);
+    });
+    reasoningPanel.appendChild(signals);
+    const caution = document.createElement('p');
+    caution.className = 'reasoning-caution';
+    caution.textContent = `${reasoning.certainty || ''} ${reasoning.next_step || ''}`.trim();
+    reasoningPanel.appendChild(caution);
 
     // 4. Audit Log Finish
     addAuditLine("Inference complete.", 'success');
@@ -229,7 +252,11 @@ async function addAuditLine(text, type = 'info', delay = 0) {
     
     const line = document.createElement('div');
     line.className = `terminal-line ${type}`;
-    line.innerHTML = `> <span style="color: var(--text-dim)">[${new Date().toLocaleTimeString()}]</span> ${text}`;
+    line.append('> ');
+    const timestamp = document.createElement('span');
+    timestamp.style.color = 'var(--text-dim)';
+    timestamp.textContent = `[${new Date().toLocaleTimeString()}]`;
+    line.append(timestamp, ` ${text}`);
     
     // Color coding
     if (type === 'success') line.style.color = 'var(--accent-green)';

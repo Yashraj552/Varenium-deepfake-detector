@@ -396,50 +396,45 @@ def generate_heatmap_onnx(face_img_pil, input_tensor_np, prob_fake):
     return blended
 
 def generate_reasoning(prob_fake, logit_mag, heatmap_img, freq_img):
-    import random
-    
-    # Statistical extraction from the forensic maps
     spatial_intensity = np.mean(heatmap_img) / 255.0
     freq_volatility = np.std(freq_img) / 255.0
-    
-    # Dynamic Forensic Token Hub
-    descriptors = {
-        "spatial": [
-            "non-contiguous pixel gradients", "asymmetric facial nodal descriptors",
-            "atymmetrical skin-texture smoothing", "boundary-blending artifacts",
-            "irregular pixel distribution patterns", "geometric landmark inconsistencies"
-        ],
-        "frequency": [
-            "high-energy DCT outliers", "periodic checkerboard noise",
-            "synthetic convolutional artifacts", "non-standard upsampling residuals",
-            "atypical noise-signature spikes", "frequency-domain ringing effects"
-        ],
-        "conclusions": [
-            "characteristic of GAN-based provenances", "typical of latent-space synthesis",
-            "suggesting a diffusion-model fingerprint", "consistent with deep-learning upscalers",
-            "indicating adversarial facial reconstruction", "correlated with AI-driven expression synthesis"
+    if prob_fake >= 0.5:
+        headline = "The image shows signals that can be associated with digital manipulation."
+        summary = "The model found enough unusual visual and texture patterns to flag this image for review."
+        signals = [
+            "Some regions differ from the surrounding image texture.",
+            "The fine-detail pattern is not fully consistent across the image.",
         ]
-    }
-
-    if prob_fake > 0.5:
-        # Deterministic but diverse selection based on the data magnitudes
-        s_idx = int(spatial_intensity * 100) % len(descriptors["spatial"])
-        f_idx = int(freq_volatility * 100) % len(descriptors["frequency"])
-        c_idx = int((prob_fake + logit_mag) * 7) % len(descriptors["conclusions"])
-        
-        report = [
-            f"[FORENSIC_SIGNAL] Analysis shows {descriptors['spatial'][s_idx]} within the primary facial region.",
-            f"[SPECTRAL_ANALYSIS] Spectral domain reveals {descriptors['frequency'][f_idx]}.",
-            f"[INFERENCE] These findings are {descriptors['conclusions'][c_idx]}, suggesting a high risk for synthetic origin."
-        ]
+        next_step = "Treat this as a review lead, not final proof. Check the original file and its source."
     else:
-        report = [
-            "[CLEARED] Signal-to-noise ratio is within the expected Gaussian parameters for physical CMOS sensors.",
-            "[FIDELITY] Global facial landmarks maintain biological geometric alignment across the nodal map.",
-            "[RESULT] Artifacts are consistent with standard high-quality compression rather than generative synthesis."
+        headline = "The image did not show strong manipulation signals in this scan."
+        summary = "The model found the image broadly consistent with the examples it learned as authentic."
+        signals = [
+            "The visible texture pattern appears broadly consistent across the image.",
+            "No strong synthetic signal crossed the model's decision threshold.",
         ]
-    
-    return "\n\n".join(report)
+        next_step = "Do not treat this as proof that the image is genuine, especially if it is edited, stylized, or AI-assisted."
+
+    if logit_mag < 2.0:
+        certainty = "The result is borderline, so extra review is especially important."
+    elif logit_mag < 8.0:
+        certainty = "The model's signal is moderate rather than decisive."
+    else:
+        certainty = "The model's signal is comparatively strong, but it can still be wrong outside its training data."
+
+    report = [headline, summary, *signals, certainty, next_step]
+    return {
+        "headline": headline,
+        "summary": summary,
+        "signals": signals,
+        "certainty": certainty,
+        "next_step": next_step,
+        "text": "\n\n".join(report),
+        "map_context": {
+            "spatial_intensity": round(float(spatial_intensity), 3),
+            "frequency_variation": round(float(freq_volatility), 3),
+        },
+    }
 
 def run_forensic_analysis(img_path):
     original_img = Image.open(img_path).convert('RGB')
@@ -486,7 +481,8 @@ def run_forensic_analysis(img_path):
         "confidence": round(prob_fake * 100, 2) if is_fake else round((1 - prob_fake) * 100, 2),
         "heatmap": to_b64(heatmap_img),
         "frequency_map": to_b64(freq_img),
-        "reasoning": reasoning,
+        "reasoning": reasoning["text"],
+        "reasoning_detail": reasoning,
         "metadata": metadata,
         "mode": "Deep Scan" if logit_mag < 8.0 else "Standard",
         "logit_mag": round(logit_mag, 2)
