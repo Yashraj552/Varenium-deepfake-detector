@@ -259,6 +259,16 @@
     background: linear-gradient(135deg, rgba(0,242,255,0.12), rgba(123,123,255,0.08));
 }
 
+.vs-landing__preview-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: saturate(0.82) contrast(1.04);
+}
+
 .vs-landing__image-glow {
     position: absolute;
     inset: 0;
@@ -266,6 +276,8 @@
         radial-gradient(circle at 40% 35%, rgba(255,255,255,0.42), transparent 16%),
         radial-gradient(circle at 60% 52%, rgba(0,242,255,0.18), transparent 22%),
         linear-gradient(135deg, rgba(18, 30, 42, 0.9), rgba(9, 14, 19, 0.95));
+    opacity: 0.24;
+    pointer-events: none;
 }
 
 .vs-landing__image-grid {
@@ -276,6 +288,40 @@
         linear-gradient(90deg, rgba(0,242,255,0.18) 1px, transparent 1px);
     background-size: 22px 22px;
     mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    opacity: 0.42;
+    pointer-events: none;
+}
+
+.vs-landing__scan-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -2px;
+    height: 3px;
+    background: var(--accent-blue);
+    box-shadow: 0 0 14px 4px rgba(0, 240, 255, 0.75);
+    animation: forensic-scan 3.8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.vs-landing__scan-label {
+    position: absolute;
+    right: 0.8rem;
+    bottom: 0.8rem;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid rgba(0, 240, 255, 0.6);
+    background: rgba(23, 33, 43, 0.72);
+    color: #ffffff;
+    font: 0.58rem var(--font-mono);
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+}
+
+@keyframes forensic-scan {
+    0%, 12% { transform: translateY(0); opacity: 0; }
+    18% { opacity: 1; }
+    82% { opacity: 1; }
+    94%, 100% { transform: translateY(calc(360px - 3px)); opacity: 0; }
 }
 
 .vs-landing__status-row {
