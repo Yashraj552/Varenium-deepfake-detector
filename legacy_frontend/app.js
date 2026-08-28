@@ -70,7 +70,14 @@ async function init() {
     checkConnectivity();
 
     // Event Listeners
-    dom.dropZone.addEventListener('click', () => dom.fileInput.click());
+    const openFilePicker = () => dom.fileInput.click();
+    dom.dropZone.addEventListener('click', openFilePicker);
+    dom.dropZone.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openFilePicker();
+        }
+    });
     dom.fileInput.addEventListener('change', handleFileSelection);
     dom.analyzeBtn.addEventListener('click', runForensicPipeline);
     dom.resetBtn.addEventListener('click', () => location.reload());
