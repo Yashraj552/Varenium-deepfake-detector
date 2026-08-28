@@ -128,6 +128,11 @@ def handle_exception(e):
     logger.error(f"Unhandled Exception: {str(e)}", exc_info=True)
     return jsonify({"error": "An internal server error occurred. Please try again later."}), 500
 
+
+@app.errorhandler(404)
+def handle_not_found(e):
+    return jsonify({"error": "Resource not found."}), 404
+
 # Limit uploads to 10 MB
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB
 # Database configuration for Supabase Postgres
@@ -586,6 +591,14 @@ def login():
     session['user_name'] = user.name
     session['user_email'] = user.email
     session['user_role'] = user.role
+    db.session.add(AuditLog(
+        user_id=user.id,
+        action="USER_LOGIN",
+        status="SUCCESS",
+        details="Password authentication succeeded",
+        ip_address=request.remote_addr,
+    ))
+    db.session.commit()
     return jsonify({'message': 'Login successful.', 'user': {'name': user.name, 'email': user.email, 'role': user.role}})
 
 
@@ -829,6 +842,15 @@ def predict():
             created_at=datetime.utcnow(),
         )
         db.session.add(investigation)
+        db.session.commit()
+
+        db.session.add(AuditLog(
+            user_id=session['user_id'],
+            action="IMAGE_ANALYSIS",
+            status="SUCCESS",
+            details=f"Analysis completed for {original_name}",
+            ip_address=request.remote_addr,
+        ))
         db.session.commit()
 
         result['investigation_id'] = investigation.id
