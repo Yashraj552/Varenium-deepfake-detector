@@ -440,22 +440,8 @@ def run_forensic_analysis(img_path):
     original_img = Image.open(img_path).convert('RGB')
     metadata = get_image_metadata(img_path)
     
-    # Face Detection
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    img_cv = cv2.cvtColor(np.array(original_img), cv2.COLOR_RGB2BGR)
-    gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-
-    if len(faces) > 0:
-        x, y, w, h = faces[0]
-        padding = int(0.4 * w)
-        y1, y2 = max(0, y-padding), min(original_img.height, y+h+padding)
-        x1, x2 = max(0, x-padding), min(original_img.width, x+w+padding)
-        face_img = original_img.crop((x1, y1, x2, y2))
-        face_img = ImageOps.autocontrast(face_img)
-        face_img = face_img.filter(ImageFilter.SHARPEN)
-    else:
-        face_img = original_img
+    # Match the full-image resize and normalization used during validation.
+    face_img = original_img
 
     input_tensor_np = preprocess_image(face_img)
     
@@ -472,8 +458,8 @@ def run_forensic_analysis(img_path):
     prob_fake = float(probs[0][1])
     logit_mag = float(np.abs(out[0][0] - out[0][1]))
 
-    # Thresholding logic
-    threshold = 0.01 if logit_mag < 8.0 else 0.5
+    # Keep the production decision threshold aligned with model validation.
+    threshold = 0.5
     is_fake = prob_fake > threshold
     
     # Generate Visualizations
