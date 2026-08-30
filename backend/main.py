@@ -59,18 +59,21 @@ allowed_origins = _env_list('CORS_ALLOWED_ORIGINS', [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://localhost:5001',
-    'http://127.0.0.1:5001'
+    'http://127.0.0.1:5001',
+    'https://deepfake-detector-rosy.vercel.app'
 ])
 CORS(app,
      resources={r"/*": {"origins": allowed_origins}},
      supports_credentials=True,
      allow_headers=['Content-Type', 'Authorization'],
      methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+
+_is_production = os.environ.get('FLASK_ENV') != 'development' and not os.environ.get('DEBUG')
 app.config.update(
     SECRET_KEY=os.environ.get('SECRET_KEY') or secrets.token_hex(64),
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE=os.environ.get('SESSION_COOKIE_SAMESITE', 'Lax'),
-    SESSION_COOKIE_SECURE=_env_bool('SESSION_COOKIE_SECURE', False),
+    SESSION_COOKIE_SAMESITE=os.environ.get('SESSION_COOKIE_SAMESITE', 'None' if _is_production else 'Lax'),
+    SESSION_COOKIE_SECURE=_env_bool('SESSION_COOKIE_SECURE', True if _is_production else False),
     PERMANENT_SESSION_LIFETIME=timedelta(minutes=30),
 )
 

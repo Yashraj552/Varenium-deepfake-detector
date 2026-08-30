@@ -13,19 +13,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- jsPDF for Reporting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        window.addEventListener('pageshow', async () => {
-            try {
-                const response = await fetch('https://deepfake-detector-ig87.onrender.com/auth/me', {
-                    credentials: 'include',
-                    cache: 'no-store'
-                });
-                if (!response.ok) window.location.replace('/');
-            } catch {
-                window.location.replace('/');
-            }
-        });
-    </script>
 </head>
 <body>
     <div class="app-container">
