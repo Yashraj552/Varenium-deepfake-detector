@@ -43,7 +43,10 @@ function showLoginContext() {
 
 function getReturnPath() {
     const returnTo = new URLSearchParams(window.location.search).get('returnTo');
-    return returnTo === 'dashboard.html' ? returnTo : 'dashboard.html';
+    if (returnTo && (returnTo === '/dashboard' || returnTo === 'dashboard.html' || returnTo === 'dashboard')) {
+        return '/dashboard';
+    }
+    return '/dashboard';
 }
 
 async function submitAuthForm(event, endpoint) {
@@ -71,7 +74,7 @@ async function submitAuthForm(event, endpoint) {
         if (!response.ok) throw new Error(data.error || 'Request failed.');
         message.textContent = data.message;
         if (endpoint.endsWith('/register')) {
-            window.location.href = 'login.html';
+            window.location.href = '/login';
         } else {
             window.location.href = getReturnPath();
         }

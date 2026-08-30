@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VARENIUM FORENSIC | Deepfake Security</title>
     <meta name="description" content="Varenium Forensic is a high-precision deepfake detection platform for forensic image analysis and AI media integrity verification.">
-    <link rel="stylesheet" href="style.css?v=3.0.0">
-    <link rel="stylesheet" href="landing.css?v=3.0.0">
+    <link rel="stylesheet" href="style.css?v=3.0.1">
+    <link rel="stylesheet" href="landing.css?v=3.0.1">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -17,10 +17,10 @@
             </div>
 
             <nav class="vs-landing__nav" aria-label="Main navigation">
-                <a href="dashboard.html">Platform</a>
-                <a href="history.html">Archive</a>
-                <a href="login.html">Sign in</a>
-                <a href="register.html" class="vs-landing__nav-button">Create account</a>
+                <a href="/dashboard">Platform</a>
+                <a href="/history">Archive</a>
+                <a href="/login">Sign in</a>
+                <a href="/register" class="vs-landing__nav-button">Create account</a>
             </nav>
         </header>
 
@@ -37,8 +37,8 @@
                     </p>
 
                     <div class="vs-landing__actions">
-                        <button class="vs-landing__primary" data-auth-target="login.html">Sign in</button>
-                        <a class="vs-landing__secondary" href="dashboard.html">Open dashboard</a>
+                        <button class="vs-landing__primary" data-auth-target="/login">Sign in</button>
+                        <a class="vs-landing__secondary" href="/dashboard">Open dashboard</a>
                     </div>
 
                     <ul class="vs-landing__metrics" aria-label="Key performance metrics">
@@ -92,6 +92,40 @@
                     <h3>Archive integrity</h3>
                     <p>Review reconstruction history, session records, and evidence metadata in one chain.</p>
                 </article>
+            </section>
+
+            <section class="vs-landing__how-to" aria-labelledby="how-to-title">
+                <div class="vs-landing__section-heading">
+                    <p class="vs-landing__eyebrow">WORKFLOW</p>
+                    <h2 id="how-to-title">How to use deepfake detection</h2>
+                    <p>Run an image through the forensic workspace and review the result with its supporting signals.</p>
+                </div>
+                <div class="vs-landing__steps">
+                    <article class="vs-landing__step-card">
+                        <span class="vs-landing__step-number">01</span>
+                        <div class="vs-landing__icon"><i data-lucide="upload-cloud"></i></div>
+                        <h3>Upload an image</h3>
+                        <p>Open the platform and select a JPG, JPEG, or PNG file from your device.</p>
+                    </article>
+                    <article class="vs-landing__step-card">
+                        <span class="vs-landing__step-number">02</span>
+                        <div class="vs-landing__icon"><i data-lucide="scan-search"></i></div>
+                        <h3>Start the scan</h3>
+                        <p>Submit the image for spatial and frequency-domain forensic analysis.</p>
+                    </article>
+                    <article class="vs-landing__step-card">
+                        <span class="vs-landing__step-number">03</span>
+                        <div class="vs-landing__icon"><i data-lucide="chart-no-axes-combined"></i></div>
+                        <h3>Review the result</h3>
+                        <p>Read the verdict, model estimate, metadata, heatmap, and frequency view together.</p>
+                    </article>
+                    <article class="vs-landing__step-card">
+                        <span class="vs-landing__step-number">04</span>
+                        <div class="vs-landing__icon"><i data-lucide="file-down"></i></div>
+                        <h3>Save the report</h3>
+                        <p>Download an evidence summary or revisit the investigation in the archive.</p>
+                    </article>
+                </div>
             </section>
         </main>
     </div>

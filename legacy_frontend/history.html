@@ -75,7 +75,7 @@
     <div class="app-container" style="display: block; overflow-y: auto;">
         <header>
             <div class="logo-group">
-                <h1 style="cursor: pointer;" onclick="window.location.href='dashboard.html'"><i data-lucide="chevron-left"></i> FORENSIC <span class="accent">ARCHIVE</span></h1>
+                <h1 style="cursor: pointer;" onclick="window.location.href='/dashboard'"><i data-lucide="chevron-left"></i> FORENSIC <span class="accent">ARCHIVE</span></h1>
             </div>
             <button onclick="clearHistory()" class="action-btn" style="width: 180px; padding: 0.8rem; background: var(--accent-crimson); color: #fff; font-size: 0.7rem;">WIPE ALL LOGS</button>
         </header>
@@ -87,7 +87,7 @@
         <div id="empty-state" class="hidden" style="text-align: center; margin-top: 10rem;">
             <i data-lucide="folder-x" style="width: 64px; height: 64px; color: var(--text-muted);"></i>
             <p style="color: var(--text-muted); margin-top: 1rem;">NO ENCRYPTED LOGS FOUND IN DATABASE</p>
-            <button onclick="window.location.href='dashboard.html'" class="action-btn" style="width: 200px; margin-top: 2rem;">START NEW CASE</button>
+            <button onclick="window.location.href='/dashboard'" class="action-btn" style="width: 200px; margin-top: 2rem;">START NEW CASE</button>
         </div>
     </div>
 
@@ -105,7 +105,7 @@
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        window.location.href = 'login.html';
+                        window.location.href = '/login';
                         return;
                     }
                     throw new Error('Unable to load investigation history');

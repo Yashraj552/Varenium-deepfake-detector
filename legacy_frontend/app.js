@@ -42,9 +42,9 @@ const API_BASE = 'https://deepfake-detector-ig87.onrender.com';
 function redirectToLogin(reason) {
     const params = new URLSearchParams({
         reason,
-        returnTo: 'dashboard.html'
+        returnTo: '/dashboard'
     });
-    window.location.href = `login.html?${params.toString()}`;
+    window.location.href = `/login?${params.toString()}`;
 }
 
 async function requireAuthentication(reason = 'Sign in to access the forensic dashboard.') {

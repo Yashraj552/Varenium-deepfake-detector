@@ -20,9 +20,9 @@
                     credentials: 'include',
                     cache: 'no-store'
                 });
-                if (!response.ok) window.location.replace('landing.html');
+                if (!response.ok) window.location.replace('/');
             } catch {
-                window.location.replace('landing.html');
+                window.location.replace('/');
             }
         });
     </script>
@@ -38,7 +38,7 @@
                 <div class="stat-item"><span class="v-dot"></span> SYSTEM: ACTIVE</div>
                 <div class="stat-item">BACKEND: <span id="ping-text">--ms</span></div>
                 <div class="stat-item">ENV: PRODUCTION</div>
-                <a href="landing.html" class="toggle-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">LANDING PAGE</a>
+                <a href="/" class="toggle-btn" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">LANDING PAGE</a>
                 <button id="logout-btn" class="toggle-btn">LOG OUT</button>
             </div>
         </header>
@@ -168,7 +168,7 @@
             <div id="history-strip" class="history-strip">
                 <!-- History items appended here -->
             </div>
-            <button onclick="window.location.href='history.html'" class="action-btn" style="width: 200px; padding: 0.8rem; background: var(--text-muted); color: #fff; font-size: 0.7rem;">VIEW ARCHIVE</button>
+            <button onclick="window.location.href='/history'" class="action-btn" style="width: 200px; padding: 0.8rem; background: var(--text-muted); color: #fff; font-size: 0.7rem;">VIEW ARCHIVE</button>
         </footer>
     </div>
 
@@ -176,7 +176,7 @@
     <script>
         document.getElementById('logout-btn').addEventListener('click', async () => {
             await fetch('https://deepfake-detector-ig87.onrender.com/auth/logout', { method: 'POST', credentials: 'include' });
-            window.location.href = 'landing.html';
+            window.location.href = '/';
         });
     </script>
     <script>

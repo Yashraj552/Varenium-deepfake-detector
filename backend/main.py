@@ -657,7 +657,7 @@ def google_login():
 def google_callback():
     google = oauth.create_client('google')
     if google is None:
-        return redirect(f'{FRONTEND_URL}/login.html?error=Google+sign-in+is+not+configured')
+        return redirect(f'{FRONTEND_URL}/login?error=Google+sign-in+is+not+configured')
 
     try:
         token = google.authorize_access_token()
@@ -680,7 +680,7 @@ def google_callback():
             db.session.add(user)
 
         if not user.is_active:
-            return redirect(f'{FRONTEND_URL}/login.html?error=This+account+is+inactive')
+            return redirect(f'{FRONTEND_URL}/login?error=This+account+is+inactive')
 
         user.last_login = datetime.utcnow()
         db.session.commit()
@@ -690,10 +690,10 @@ def google_callback():
         session['user_name'] = user.name
         session['user_email'] = user.email
         session['user_role'] = user.role
-        return redirect(f'{FRONTEND_URL}/dashboard.html')
+        return redirect(f'{FRONTEND_URL}/dashboard')
     except Exception:
         logger.exception('Google sign-in callback failed')
-        return redirect(f'{FRONTEND_URL}/login.html?error=Google+sign-in+could+not+be+completed')
+        return redirect(f'{FRONTEND_URL}/login?error=Google+sign-in+could+not+be+completed')
 
 
 @app.route('/auth/logout', methods=['POST'])
