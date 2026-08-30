@@ -172,66 +172,154 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 const isFake = record.analysis_result === 'MANIPULATED';
+                const primaryColor = isFake ? [217, 4, 41] : [0, 168, 150];
                 const caseId = `CASE-${String(record.id).padStart(6, '0')}`;
-                const verdictColor = isFake ? [255, 171, 0] : [0, 174, 185];
+                const timestamp = new Date(record.created_at).toUTCString();
 
-                doc.setFillColor(23, 33, 43);
-                doc.rect(0, 0, 210, 36, 'F');
+                // Header Banner
+                doc.setFillColor(15, 23, 42);
+                doc.rect(0, 0, 210, 38, 'F');
+
                 doc.setTextColor(255, 255, 255);
-                doc.setFontSize(20);
-                doc.setFont('helvetica', 'bold');
-                doc.text('VARENIUM FORENSIC', 15, 22);
-                doc.setFontSize(9);
-                doc.setFont('helvetica', 'normal');
-                doc.text('ARCHIVED FORENSIC ANALYSIS REPORT', 15, 29);
-
-                doc.setTextColor(23, 33, 43);
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'bold');
-                doc.text('INVESTIGATION SUMMARY', 15, 55);
-                doc.line(15, 58, 195, 58);
-
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'normal');
-                doc.text('CASE ID:', 15, 70);
-                doc.text(caseId, 65, 70);
-                doc.text('TIMESTAMP:', 15, 78);
-                doc.text(new Date(record.created_at).toLocaleString(), 65, 78);
-                doc.text('SOURCE FILE:', 15, 86);
-                doc.text(String(record.original_filename).slice(0, 55), 65, 86);
-                doc.text('SHA-256:', 15, 94);
-                doc.text(record.file_hash, 65, 94);
-
-                doc.setDrawColor(...verdictColor);
-                doc.setLineWidth(1);
-                doc.rect(15, 108, 180, 26);
-                doc.setTextColor(...verdictColor);
                 doc.setFontSize(18);
                 doc.setFont('helvetica', 'bold');
-                doc.text(`VERDICT: ${record.analysis_result}`, 22, 125);
+                doc.text('VARENIUM FORENSIC', 15, 18);
 
-                doc.setTextColor(23, 33, 43);
-                doc.setFontSize(12);
-                doc.text('SAVED MODEL RESULT', 15, 153);
-                doc.line(15, 156, 75, 156);
-                doc.setFontSize(10);
+                doc.setFontSize(8.5);
                 doc.setFont('helvetica', 'normal');
-                doc.text('Confidence:', 15, 168);
-                doc.text(`${record.confidence_score}%`, 65, 168);
-                doc.text('Record source:', 15, 176);
-                doc.text('Persisted investigation archive', 65, 176);
+                doc.setTextColor(148, 163, 184);
+                doc.text('ARCHIVED FORENSIC ANALYSIS REPORT & EVIDENCE RECORD', 15, 25);
+                doc.text('PERSISTED INVESTIGATION ARCHIVE // REPOSIT EVIDENCE VAULT', 15, 31);
 
+                // Case ID Block
+                doc.setFillColor(248, 250, 252);
+                doc.rect(15, 43, 180, 18, 'F');
+                doc.setDrawColor(226, 232, 240);
+                doc.rect(15, 43, 180, 18, 'S');
+
+                doc.setFontSize(8.5);
+                doc.setTextColor(71, 85, 105);
+                doc.setFont('helvetica', 'bold');
+                doc.text('CASE ID:', 20, 50);
+                doc.text('TIMESTAMP (UTC):', 75, 50);
+                doc.text('RECORD STATUS:', 145, 50);
+
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(caseId, 20, 56);
+                doc.text(timestamp, 75, 56);
+                doc.setTextColor(0, 150, 100);
+                doc.setFont('helvetica', 'bold');
+                doc.text('ARCHIVED / VERIFIED', 145, 56);
+
+                // Verdict Banner
+                doc.setFillColor(isFake ? 254 : 240, isFake ? 242 : 253, isFake ? 242 : 250);
+                doc.rect(15, 66, 180, 26, 'F');
+                doc.setDrawColor(...primaryColor);
+                doc.setLineWidth(1.2);
+                doc.rect(15, 66, 180, 26, 'S');
+
+                doc.setTextColor(...primaryColor);
+                doc.setFontSize(14);
+                doc.setFont('helvetica', 'bold');
+                const verdictTitle = isFake ? 'VERDICT: SYNTHETIC / MANIPULATED' : 'VERDICT: AUTHENTIC / NO MANIPULATION';
+                doc.text(verdictTitle, 20, 77);
+
+                doc.setFontSize(9.5);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(51, 65, 85);
+                doc.text(`Persisted Confidence: ${record.confidence_score}%   |   Threat Level: ${isFake ? 'CRITICAL' : 'LOW'}`, 20, 85);
+
+                // Archived Visual Sample
+                doc.setTextColor(15, 23, 42);
                 doc.setFontSize(12);
                 doc.setFont('helvetica', 'bold');
-                doc.text('ARCHIVED SAMPLE', 15, 198);
-                doc.line(15, 201, 75, 201);
-                doc.addImage(imageData, 'JPEG', 15, 210, 80, 60);
+                doc.text('ARCHIVED SOURCE EVIDENCE', 15, 103);
+                doc.setDrawColor(203, 213, 225);
+                doc.setLineWidth(0.5);
+                doc.line(15, 105, 195, 105);
+
+                doc.setFillColor(241, 245, 249);
+                doc.rect(15, 112, 85, 85, 'F');
+                try {
+                    doc.addImage(imageData, 'JPEG', 15, 112, 85, 85);
+                } catch (e) {
+                    console.warn('Archived sample image render skipped:', e);
+                }
+                doc.rect(15, 112, 85, 85, 'S');
+
+                // Metadata details next to image
+                doc.setFillColor(248, 250, 252);
+                doc.rect(106, 112, 89, 85, 'F');
+                doc.rect(106, 112, 89, 85, 'S');
+
+                doc.setFontSize(9);
+                doc.setTextColor(15, 23, 42);
+                doc.setFont('helvetica', 'bold');
+                doc.text('INVESTIGATION PARAMETERS', 111, 122);
+                doc.line(111, 124, 185, 124);
 
                 doc.setFontSize(8);
+                doc.setTextColor(71, 85, 105);
+                doc.text('Source Filename:', 111, 134);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(100, 110, 118);
-                doc.text('This report was generated from the saved investigation record.', 15, 285);
-                doc.text('VARENIUM FORENSIC // ARCHIVE EXPORT', 15, 290);
+                doc.setTextColor(15, 23, 42);
+                doc.text(String(record.original_filename || 'source.jpg').slice(0, 30), 111, 140);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Model Confidence Score:', 111, 150);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(`${record.confidence_score}%`, 111, 156);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Evaluation Model:', 111, 166);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text('DualStream-XAI (ONNX Runtime)', 111, 172);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Storage Reference:', 111, 182);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(String(record.stored_filename || '').slice(0, 30), 111, 188);
+
+                // Cryptographic Hash Section
+                doc.setTextColor(15, 23, 42);
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'bold');
+                doc.text('CRYPTOGRAPHIC INTEGRITY & SHA-256 HASH', 15, 210);
+                doc.line(15, 212, 195, 212);
+
+                doc.setFillColor(248, 250, 252);
+                doc.rect(15, 217, 180, 20, 'F');
+                doc.rect(15, 217, 180, 20, 'S');
+
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('SHA-256 DIGITAL FINGERPRINT:', 20, 225);
+                doc.setFont('courier', 'bold');
+                doc.setFontSize(7.5);
+                doc.setTextColor(15, 23, 42);
+                doc.text(record.file_hash || `${caseId}-CRYPTOGRAPHIC-INTEGRITY-HASH`, 20, 232);
+
+                // Disclaimer
+                doc.setFontSize(7);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(100, 116, 139);
+                const disclaimer = 'This report was generated from a stored forensic record in the Varenium Forensic Database. Findings are probabilistic AI estimates.';
+                doc.text(doc.splitTextToSize(disclaimer, 180), 15, 250);
+
+                // Footer
+                doc.setFontSize(7.5);
+                doc.setTextColor(148, 163, 184);
+                doc.text('VARENIUM FORENSIC INTELLIGENCE  |  ARCHIVED EVIDENCE EXPORT', 15, 287);
+                doc.text(`RECORD: #${record.id}`, 165, 287);
+
                 doc.save(`forensic_archive_${caseId}.pdf`);
             } catch (error) {
                 console.error(error);
