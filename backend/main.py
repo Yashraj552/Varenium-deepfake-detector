@@ -596,7 +596,7 @@ def login():
     db.session.commit()
 
     session.clear()
-    session.permanent = True
+    session.permanent = False
     session.modified = True
     session['user_id'] = user.id
     session['user_name'] = user.name
@@ -648,7 +648,7 @@ def firebase_login():
         user.last_login = datetime.utcnow()
         db.session.commit()
         session.clear()
-        session.permanent = True
+        session.permanent = False
         session['user_id'] = user.id
         session['user_name'] = user.name
         session['user_email'] = user.email
@@ -700,7 +700,7 @@ def google_callback():
         user.last_login = datetime.utcnow()
         db.session.commit()
         session.clear()
-        session.permanent = True
+        session.permanent = False
         session['user_id'] = user.id
         session['user_name'] = user.name
         session['user_email'] = user.email
