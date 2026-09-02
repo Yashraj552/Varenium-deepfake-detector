@@ -10,7 +10,7 @@ python-dotenv
 marshmallow
 bcrypt
 gunicorn
-Authlib
+
 firebase-admin
 
 psycopg2-binary

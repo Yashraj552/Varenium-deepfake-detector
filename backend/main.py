@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 import cv2
 import numpy as np
-from flask import Flask, request, jsonify, session, send_from_directory, redirect, url_for
+from flask import Flask, request, jsonify, session, send_from_directory
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from PIL import Image, ImageOps, ImageFilter
@@ -19,7 +19,6 @@ import logging
 from dotenv import load_dotenv
 from marshmallow import Schema, fields, ValidationError
 import bcrypt
-from authlib.integrations.flask_client import OAuth
 import firebase_admin
 from firebase_admin import auth as firebase_auth, credentials
 
@@ -103,15 +102,6 @@ try:
 except Exception as _e:
     print(f"[!] Firebase init failed: {_e}")
 
-oauth = OAuth(app)
-if os.environ.get('GOOGLE_CLIENT_ID') and os.environ.get('GOOGLE_CLIENT_SECRET'):
-    oauth.register(
-        name='google',
-        client_id=os.environ['GOOGLE_CLIENT_ID'],
-        client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
-        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-        client_kwargs={'scope': 'openid email profile'},
-    )
 
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:8000')
 
@@ -658,57 +648,6 @@ def firebase_login():
         logger.exception('Firebase sign-in verification failed')
         return jsonify({'error': 'Firebase sign-in could not be verified.'}), 401
 
-
-@app.route('/auth/google')
-def google_login():
-    google = oauth.create_client('google')
-    if google is None:
-        return jsonify({'error': 'Google sign-in is not configured on the server.'}), 503
-    redirect_uri = os.environ.get('GOOGLE_REDIRECT_URI') or url_for('google_callback', _external=True)
-    return google.authorize_redirect(redirect_uri)
-
-
-@app.route('/auth/google/callback')
-def google_callback():
-    google = oauth.create_client('google')
-    if google is None:
-        return redirect(f'{FRONTEND_URL}/login?error=Google+sign-in+is+not+configured')
-
-    try:
-        token = google.authorize_access_token()
-        user_info = token.get('userinfo')
-        if not user_info or not user_info.get('email') or not user_info.get('email_verified'):
-            raise ValueError('Google did not return a verified email address.')
-
-        email = user_info['email'].lower()
-        user = User.query.filter_by(email=email).first()
-        if user is None:
-            random_password = bcrypt.hashpw(secrets.token_bytes(32), bcrypt.gensalt()).decode('utf-8')
-            user = User(
-                name=(user_info.get('name') or email.split('@')[0])[:100],
-                email=email,
-                password_hash=random_password,
-                role='user',
-                is_active=True,
-                created_at=datetime.utcnow(),
-            )
-            db.session.add(user)
-
-        if not user.is_active:
-            return redirect(f'{FRONTEND_URL}/login?error=This+account+is+inactive')
-
-        user.last_login = datetime.utcnow()
-        db.session.commit()
-        session.clear()
-        session.permanent = False
-        session['user_id'] = user.id
-        session['user_name'] = user.name
-        session['user_email'] = user.email
-        session['user_role'] = user.role
-        return redirect(f'{FRONTEND_URL}/dashboard')
-    except Exception:
-        logger.exception('Google sign-in callback failed')
-        return redirect(f'{FRONTEND_URL}/login?error=Google+sign-in+could+not+be+completed')
 
 
 @app.route('/auth/logout', methods=['POST'])
