@@ -54,10 +54,32 @@ async function requireAuthentication(reason = 'Sign in to access the forensic da
             redirectToLogin(reason);
             return false;
         }
+        const data = await response.json();
+        if (!data || data.authenticated === false) {
+            redirectToLogin(reason);
+            return false;
+        }
         return true;
-    } catch {
-        addAuditLine('ERROR: Authentication service unavailable.', 'error');
+    } catch (error) {
+        console.error('Authentication verification error:', error);
+        redirectToLogin('Session verification failed or server reconnecting. Please sign in.');
         return false;
+    }
+}
+
+async function performLogout() {
+    try {
+        await fetch(`${API_BASE}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        }).catch(() => {});
+
+        if (window.firebase && firebase.apps && firebase.apps.length) {
+            await firebase.auth().signOut().catch(() => {});
+        }
+    } finally {
+        sessionStorage.clear();
+        window.location.href = '/login?reason=Signed+out+successfully.';
     }
 }
 

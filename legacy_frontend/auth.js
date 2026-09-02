@@ -16,6 +16,8 @@ function initializeFirebaseAuth() {
 
             if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_CONFIG);
             const provider = new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+            
             const result = await firebase.auth().signInWithPopup(provider);
             const idToken = await result.user.getIdToken();
             const response = await fetch(`${API_BASE}/auth/firebase`, {
@@ -28,7 +30,16 @@ function initializeFirebaseAuth() {
             if (!response.ok) throw new Error(data.error || 'Firebase sign-in failed.');
             window.location.href = getReturnPath();
         } catch (error) {
-            message.textContent = error.message;
+            console.error('Sign-in error:', error);
+            if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+                message.textContent = 'Sign-in popup was closed before completing. Please try again.';
+            } else if (error.code === 'auth/unauthorized-domain') {
+                message.textContent = 'This domain is not authorized in Firebase Console yet. Please add it in Authorized Domains.';
+            } else if (error.code === 'auth/popup-blocked') {
+                message.textContent = 'Popup was blocked by your browser. Please enable popups for this site and try again.';
+            } else {
+                message.textContent = error.message || 'Authentication failed. Please try again.';
+            }
             button.disabled = false;
         }
     });
