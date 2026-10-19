@@ -20,7 +20,7 @@
 
 <br/>
 
-![Varenium Interface](./legacy_frontend/landing-page-image.JPG)
+![Varenium Interface](./assets/landing-page.png)
 
 </div>
 
